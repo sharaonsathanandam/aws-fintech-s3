@@ -17,7 +17,7 @@ pipeline {
     {
       steps {
         script {
-          changedYamlFiles = sh(
+          def changedYamlFiles = sh(
             script: 'git diff --name-only HEAD~1 HEAD | grep configs/ | grep .yaml || true',
             returnStdout: true
           ).trim().split('\n').findAll { it.endsWith(".yaml") }
