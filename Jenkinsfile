@@ -13,22 +13,30 @@ pipeline {
             }
         }
 
-stage('Show Commit Hash for YAML Files') {
-    steps {
-        sh '''
-            echo "Listing commit hashes for all YAML files..."
-            find . -type f -name "*.yaml" > files.tmp
-            while IFS= read -r f; do
-              commit=$(git log -n 1 --pretty=format:%H -- "$f")
-              echo "$f was last modified in commit $commit"
-            done < files.tmp
-            rm -f files.tmp
-            def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
-            def newYamls = changedFiles.findAll { it.endsWith(".yaml") }
-            echo $changedFiles
-            echo $newYamls
-        '''
-    }
-}
+        stage('Show Commit Hash for YAML Files') {
+            steps {
+                sh '''
+                    echo "Listing commit hashes for all YAML files..."
+                    find . -type f -name "*.yaml" > files.tmp
+                    while IFS= read -r f; do
+                      commit=$(git log -n 1 --pretty=format:%H -- "$f")
+                      echo "$f was last modified in commit $commit"
+                    done < files.tmp
+                    rm -f files.tmp
+                '''
+            }
+        }
+
+        stage('Detect Changed YAML Files') {
+            steps {
+                script {
+                    def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
+                    def newYamls = changedFiles.findAll { it.endsWith(".yaml") }
+
+                    echo "Changed files: ${changedFiles}"
+                    echo "Changed YAML files: ${newYamls}"
+                }
+            }
+        }
     }
 }
