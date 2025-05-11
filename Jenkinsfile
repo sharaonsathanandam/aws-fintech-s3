@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        FILE_PATH = "path/to/your/file.yaml"   // optional if looping through all .yaml files
-        REPO_URL  = "https://github.com/your-org/your-repo.git"
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -13,28 +8,31 @@ pipeline {
             }
         }
 
-        stage('Show Commit Hash for YAML Files') {
-            steps {
-                sh '''
-                    echo "Listing commit hashes for all YAML files..."
-                    find . -type f -name "*.yaml" > files.tmp
-                    while IFS= read -r f; do
-                      commit=$(git log -n 1 --pretty=format:%H -- "$f")
-                      echo "$f was last modified in commit $commit"
-                    done < files.tmp
-                    rm -f files.tmp
-                '''
-            }
-        }
-
-        stage('Detect Changed YAML Files') {
+        stage('Get YAML Commit Hashes') {
             steps {
                 script {
+                    // Step 1: Get recently changed and added files
                     def changedFiles = sh(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim().split('\n')
-                    def newYamls = changedFiles.findAll { it.endsWith(".yaml") }
+                    def newFiles = sh(script: 'git diff --name-only --diff-filter=A HEAD~1 HEAD', returnStdout: true).trim().split('\n')
 
-                    echo "Changed files: ${changedFiles}"
-                    echo "Changed YAML files: ${newYamls}"
+                    // Step 2: Filter YAML files from each list
+                    def changedYamls = changedFiles.findAll { it.endsWith(".yaml") }
+                    def newYamls = newFiles.findAll { it.endsWith(".yaml") }
+
+                    echo "Changed YAML files: ${changedYamls}"
+                    echo "New YAML files: ${newYamls}"
+
+                    // Step 3: Combine and deduplicate
+                    def allYamls = (changedYamls + newYamls).unique()
+
+                    // Step 4: Get commit hash for each file
+                    allYamls.each { file ->
+                        def commitHash = sh(
+                            script: "git log -n 1 --pretty=format:%H -- ${file}",
+                            returnStdout: true
+                        ).trim()
+                        echo "${file} was last modified in commit ${commitHash}"
+                    }
                 }
             }
         }
