@@ -13,16 +13,32 @@ pipeline {
             }
         }
 
-        stage('Show Commit Hash for File') {
-            steps {
-                sh '''
-                        echo "Listing commit hashes for all YAML files:"
-                        find . -type f -name "*.yaml" | while read f; do
-                          commit=$(git log -n 1 --pretty=format:%H -- "$f")
-                          echo "$f was last modified in commit $commit"
-                        done
-                   '''
-            }
+    stage('Detect New/Updated YAMLs')
+    {
+      steps {
+        script {
+          changedYamlFiles = sh(
+            script: 'git diff --name-only HEAD~1 HEAD | grep configs/ | grep .yaml || true',
+            returnStdout: true
+          ).trim().split('\n').findAll { it.endsWith(".yaml") }
+
+          if (changedYamlFiles.isEmpty()) {
+            echo "No new or updated YAMLs found. Skipping pipeline."
+            currentBuild.result = 'SUCCESS'
+            exit 0
+          }
         }
+      }
+    }
+
+        stage('Process New YAMLs') {
+      steps {
+        script {
+          for (yamlFile in changedYamlFiles) {
+            def commitHash = sh(script: "git log -n 1 --pretty=format:%H -- ${yamlFile}", returnStdout: true).trim()
+            echo "Processing ${yamlFile} from commit ${commitHash}"
+          }
+        }
+      }
     }
 }
