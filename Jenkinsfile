@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        FILE_PATH = "path/to/your/file.yaml"   // adjust as needed
+        FILE_PATH = "path/to/your/file.yaml"   // optional if looping through all .yaml files
         REPO_URL  = "https://github.com/your-org/your-repo.git"
     }
 
@@ -13,33 +13,18 @@ pipeline {
             }
         }
 
-    stage('Detect New/Updated YAMLs')
-    {
-      steps {
-        script {
-          def changedYamlFiles = sh(
-            script: 'git diff --name-only HEAD~1 HEAD | grep configs/ | grep .yaml || true',
-            returnStdout: true
-          ).trim().split('\n').findAll { it.endsWith(".yaml") }
-
-          if (changedYamlFiles.isEmpty()) {
-            echo "No new or updated YAMLs found. Skipping pipeline."
-            currentBuild.result = 'SUCCESS'
-            exit 0
-          }
-        }
-      }
+stage('Show Commit Hash for YAML Files') {
+    steps {
+        sh '''
+            echo "Listing commit hashes for all YAML files..."
+            find . -type f -name "*.yaml" > files.tmp
+            while IFS= read -r f; do
+              commit=$(git log -n 1 --pretty=format:%H -- "$f")
+              echo "$f was last modified in commit $commit"
+            done < files.tmp
+            rm -f files.tmp
+        '''
     }
-
-        stage('Process New YAMLs') {
-      steps {
-        script {
-          for (yamlFile in changedYamlFiles) {
-            def commitHash = sh(script: "git log -n 1 --pretty=format:%H -- ${yamlFile}", returnStdout: true).trim()
-            echo "Processing ${yamlFile} from commit ${commitHash}"
-          }
-        }
-      }
+}
     }
-  }
 }
