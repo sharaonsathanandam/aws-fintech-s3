@@ -15,12 +15,12 @@ pipeline {
 
         stage('Show Commit Hash for File') {
             steps {
-                script {
+                sh '''
                         for f in *.yaml; do
                           commit=$(git log -n 1 --pretty=format:%H -- "$f")
                           echo "$f was last modified in commit $commit"
                         done
-                }
+                   '''
             }
         }
     }
