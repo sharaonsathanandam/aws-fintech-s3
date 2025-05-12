@@ -53,6 +53,7 @@ pipeline {
         stage('Process New YAMLs') {
             steps{
                 script{
+                    echo "All changed files inside next stage: ${allYamls}"
                     for (yamlFile in allYamls) {
                         def commitHash = sh(script: "git log -n 1 --pretty=format:%H -- ${yamlFile}", returnStdout: true).trim()
                         echo "Processing ${yamlFile} (commit ${commitHash})"
