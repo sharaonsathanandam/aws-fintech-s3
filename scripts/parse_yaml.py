@@ -1,4 +1,4 @@
-import yaml, json, sys, os
+import yaml, json, os
 
 input_file = sys.argv[1]
 with open(input_file) as f:
