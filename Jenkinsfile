@@ -59,6 +59,7 @@ pipeline {
 
                         sh '''
                             python3 -m pip install -r scripts/requirements.txt
+                            echo ${yamlFile}
                             python3 scripts/parse_yaml.py ${yamlFile}
                            '''
                         sh "ls -lrt"
