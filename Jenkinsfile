@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+    AWS_DEFAULT_REGION = 'us-east-2'
+    AWS_ACCESS_KEY_ID     = credentials('Terraform-CICD')
+    AWS_SECRET_ACCESS_KEY = credentials('Terraform-CICD')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -25,6 +31,12 @@ pipeline {
                     // Step 3: Combine and deduplicate
                     def allYamls = (changedYamls + newYamls).unique()
 
+                    if (allYamls.isEmpty()) {
+                        echo "No new or updated YAMLs found. Skipping pipeline."
+                        currentBuild.result = 'SUCCESS'
+                        exit 0
+                      }
+
                     // Step 4: Get commit hash for each file
                     allYamls.each { file ->
                         def commitHash = sh(
@@ -35,6 +47,29 @@ pipeline {
                     }
                 }
             }
+        }
+
+        stage('Process New YAMLs') {
+            steps{
+                script{
+                    for (yamlFile in allYamls) {
+                        def commitHash = sh(script: "git log -n 1 --pretty=format:%H -- ${yamlFile}", returnStdout: true).trim()
+                        echo "Processing ${yamlFile} (commit ${commitHash})"
+
+                        sh "python3 scripts/generate_tfvars.py ${yamlFile}"
+                        sh "ls -lrt"
+                        def tfvarsFile = "terraform/terraform.tfvars.json"
+                        sh "jq '. + {git_commit_hash: \"${commitHash}\"}' ${tfvarsFile} > tmp && mv tmp ${tfvarsFile}"
+
+                        dir('terraform') {
+                          sh 'terraform init -reconfigure'
+                          sh 'terraform plan -out=tfplan'
+                          input message: "Apply changes for ${yamlFile}?", ok: "Apply Now"
+                          sh 'terraform apply -auto-approve tfplan'
+                        }
+                }
+            }
+
         }
     }
 }
