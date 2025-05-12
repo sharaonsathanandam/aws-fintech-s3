@@ -57,7 +57,7 @@ pipeline {
                         def commitHash = sh(script: "git log -n 1 --pretty=format:%H -- ${yamlFile}", returnStdout: true).trim()
                         echo "Processing ${yamlFile} (commit ${commitHash})"
 
-                        sh "python3 scripts/generate_tfvars.py ${yamlFile}"
+                        sh "python3 scripts/parse_yaml.py ${yamlFile}"
                         sh "ls -lrt"
                         def tfvarsFile = "terraform/terraform.tfvars.json"
                         sh "jq '. + {git_commit_hash: \"${commitHash}\"}' ${tfvarsFile} > tmp && mv tmp ${tfvarsFile}"
