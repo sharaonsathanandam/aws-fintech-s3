@@ -1,3 +1,4 @@
+def allYamls = []
 pipeline {
     agent any
 
@@ -29,12 +30,12 @@ pipeline {
                     echo "New YAML files: ${newYamls}"
 
                     // Step 3: Combine and deduplicate
-                    def allYamls = (changedYamls + newYamls).unique()
+                    allYamls = (changedYamls + newYamls).unique()
 
                     if (allYamls.isEmpty()) {
                         echo "No new or updated YAMLs found. Skipping pipeline."
                         currentBuild.result = 'SUCCESS'
-                        returnStdout: true
+                        return
                       }
 
                     // Step 4: Get commit hash for each file
