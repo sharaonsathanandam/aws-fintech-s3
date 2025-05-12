@@ -34,7 +34,7 @@ pipeline {
                     if (allYamls.isEmpty()) {
                         echo "No new or updated YAMLs found. Skipping pipeline."
                         currentBuild.result = 'SUCCESS'
-                        exit 0
+                        returnStdout: true
                       }
 
                     // Step 4: Get commit hash for each file
