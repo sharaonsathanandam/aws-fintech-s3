@@ -67,9 +67,10 @@ pipeline {
                           input message: "Apply changes for ${yamlFile}?", ok: "Apply Now"
                           sh 'terraform apply -auto-approve tfplan'
                         }
+                    }
                 }
             }
-
+          }
         }
     }
 }
