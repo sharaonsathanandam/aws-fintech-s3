@@ -58,7 +58,7 @@ pipeline {
                         echo "Processing ${yamlFile} (commit ${commitHash})"
 
                         sh '''
-                            pip install -r scripts/requirements.txt
+                            python3 -m pip install -r scripts/requirements.txt
                             python3 scripts/parse_yaml.py ${yamlFile}
                            '''
                         sh "ls -lrt"
