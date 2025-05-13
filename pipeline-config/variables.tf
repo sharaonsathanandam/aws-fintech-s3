@@ -42,6 +42,7 @@ variable "team_name" {
 variable "data_classification" {
   description = "Sensitivity classification of the data"
   type        = string
+  default     = ""
   validation {
     condition     = contains(["fin_analysis", "treas_ops"], var.data_classification)
     error_message = "Classification must be one of: fin_analysis or treas_ops."
@@ -74,4 +75,9 @@ variable "is_access_request" {
 variable "is_bucket_onboarding" {
   type    = bool
   default = false
+}
+
+variable "user_id" {
+  type = string
+  default = ""
 }
