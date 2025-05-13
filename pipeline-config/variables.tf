@@ -75,3 +75,8 @@ variable "is_bucket_onboarding" {
   type    = bool
   default = false
 }
+
+variable "user_id" {
+  type = string
+  default = ""
+}
