@@ -22,7 +22,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "s3_bucket_kms" {
   count  = var.is_bucket_onboarding ? 1 : 0
-  bucket = aws_s3_bucket.s3_bucket.id
+  bucket = aws_s3_bucket.s3_bucket[count.index].id
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
@@ -34,7 +34,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "s3_bucket_kms" {
 #Enable Versioning for tamper-evidence
 resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
   count  = var.is_bucket_onboarding ? 1 : 0
-  bucket    = aws_s3_bucket.s3_bucket.id
+  bucket    = aws_s3_bucket.s3_bucket[count.index].id
   versioning_configuration {
     status = "Enabled"
   }
@@ -43,7 +43,7 @@ resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
 #Create folders
 resource "aws_s3_object" "folders" {
   for_each = var.is_bucket_onboarding ? toset(var.folder_prefixes) : {}
-  bucket = aws_s3_bucket.s3_bucket.id
+  bucket = aws_s3_bucket.s3_bucket[count.index].id
   key    = "${each.key}/"
   storage_class = "STANDARD"
   content = ""
@@ -52,14 +52,14 @@ resource "aws_s3_object" "folders" {
 #Create partitions
 resource "aws_s3_object" "partitions" {
   for_each = var.is_bucket_onboarding ? toset(var.partition_paths) : {}
-  bucket   = aws_s3_bucket.s3_bucket.id
+  bucket   = aws_s3_bucket.s3_bucket[count.index].id
   key      = "${each.value}/"
   content  = ""
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "my_bucket_lifecycle" {
   count  = var.is_bucket_onboarding ? 1 : 0
-  bucket = aws_s3_bucket.s3_bucket.id
+  bucket = aws_s3_bucket.s3_bucket[count.index].id
   rule {
     id     = "ExpireObjectsAfter7Days"
     status = "Enabled"
