@@ -42,8 +42,8 @@ resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
 
 #Create folders
 resource "aws_s3_object" "folders" {
-  for_each = var.is_bucket_onboarding ? toset(var.folder_prefixes) : {}
-  bucket = aws_s3_bucket.s3_bucket[count.index].id
+  for_each = var.is_bucket_onboarding ? toset(var.folder_prefixes) :toset([])
+  bucket = aws_s3_bucket.s3_bucket[0].id
   key    = "${each.key}/"
   storage_class = "STANDARD"
   content = ""
@@ -51,8 +51,8 @@ resource "aws_s3_object" "folders" {
 
 #Create partitions
 resource "aws_s3_object" "partitions" {
-  for_each = var.is_bucket_onboarding ? toset(var.partition_paths) : {}
-  bucket   = aws_s3_bucket.s3_bucket[count.index].id
+  for_each = var.is_bucket_onboarding ? toset(var.partition_paths) : toset([])
+  bucket   = aws_s3_bucket.s3_bucket[0].id
   key      = "${each.value}/"
   content  = ""
 }
