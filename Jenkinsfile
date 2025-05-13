@@ -61,10 +61,10 @@ pipeline {
                         sh "python3 scripts/parse_yaml.py ${yamlFile}"
 
                         def tfvarsFile = "pipeline-config/terraform.tfvars.json"
-                        sh "cat pipeline-config/terraform.tfvars.json"
                         sh "jq '. + {git_commit_hash: \"${commitHash}\"}' ${tfvarsFile} > tmp && mv tmp ${tfvarsFile}"
 
                         dir('pipeline-config') {
+                          sh "cat terraform.tfvars.json"
                           sh '/usr/local/bin/terraform init -reconfigure'
                           sh '/usr/local/bin/terraform plan -out=tfplan'
                           input message: "Apply changes for ${yamlFile}?", ok: "Apply Now"
