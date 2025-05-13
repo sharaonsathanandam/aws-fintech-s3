@@ -39,7 +39,7 @@ resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
 
 #Create folders
 resource "aws_s3_object" "folders" {
-  for_each = var.folder_prefixes
+  for_each = toset(var.folder_prefixes)
   bucket = aws_s3_bucket.s3_bucket.id
   key    = "${each.key}/"
   storage_class = "STANDARD"
@@ -48,7 +48,7 @@ resource "aws_s3_object" "folders" {
 
 #Create partitions
 resource "aws_s3_object" "partitions" {
-  for_each = var.partition_paths
+  for_each = toset(var.partition_paths)
   bucket   = aws_s3_bucket.s3_bucket.id
   key      = "${each.value}/"
   content  = ""
