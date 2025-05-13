@@ -64,10 +64,10 @@ pipeline {
                         sh "jq '. + {git_commit_hash: \"${commitHash}\"}' ${tfvarsFile} > tmp && mv tmp ${tfvarsFile}"
 
                         dir('terraform') {
-                          sh 'terraform init -reconfigure'
-                          sh 'terraform plan -out=tfplan'
+                          sh '/usr/local/bin/terraform init -reconfigure'
+                          sh '/usr/local/bin/terraform plan -out=tfplan'
                           input message: "Apply changes for ${yamlFile}?", ok: "Apply Now"
-                          sh 'terraform apply -auto-approve tfplan'
+                          sh '/usr/local/bin/terraform apply -auto-approve tfplan'
                         }
                     }
                 }
