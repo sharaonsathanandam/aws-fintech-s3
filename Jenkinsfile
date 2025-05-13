@@ -60,7 +60,7 @@ pipeline {
                         sh "python3 -m pip install -r scripts/requirements.txt"
                         sh "python3 scripts/parse_yaml.py ${yamlFile}"
                         sh "ls -lrt"
-                        def tfvarsFile = "terraform/terraform.tfvars.json"
+                        def tfvarsFile = "pipeline-config/terraform.tfvars.json"
                         sh "jq '. + {git_commit_hash: \"${commitHash}\"}' ${tfvarsFile} > tmp && mv tmp ${tfvarsFile}"
 
                         dir('terraform') {
