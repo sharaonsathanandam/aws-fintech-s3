@@ -54,6 +54,17 @@ resource "aws_s3_object" "partitions" {
   content  = ""
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "my_bucket_lifecycle" {
+  bucket = aws_s3_bucket.s3_bucket.id
+  rule {
+    id     = "ExpireObjectsAfter7Days"
+    status = "Enabled"
+    expiration {
+      days = var.retention_period
+    }
+  }
+}
+
 resource "aws_s3_bucket_policy" "read_only_policy" {
   count = var.is_access_request ? 1 : 0
 

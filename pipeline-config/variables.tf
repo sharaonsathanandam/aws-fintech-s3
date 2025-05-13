@@ -18,12 +18,6 @@ variable "environment" {
   }
 }
 
-variable "enable_partitioning" {
-  description = "Whether to create partitioned folders (like year/month/day)"
-  type        = bool
-  default     = true
-}
-
 variable "dataset_name" {
   description = "Name of the dataset (e.g., treasury_movements)"
   type        = string
@@ -54,11 +48,6 @@ variable "data_classification" {
   }
 }
 
-variable "kms_key_id" {
-  description = "KMS Key ID for encryption"
-  type = string
-}
-
 variable "partition_paths" {
   description = "List of full partition paths to create"
   type        = list(string)
@@ -70,18 +59,6 @@ variable "retention_period" {
   description = "Data retention period in days"
   type        = number
   default     = 30
-}
-
-variable "expected_frequency" {
-  description = "Expected data update frequency (e.g., daily, hourly)"
-  type        = string
-  default     = "daily"
-}
-
-variable "schema_definition" {
-  description = "JSON schema definition of the dataset"
-  type        = string
-  default     = null
 }
 
 variable "principal_arn" {
