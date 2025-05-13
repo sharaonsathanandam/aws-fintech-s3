@@ -84,18 +84,12 @@ variable "schema_definition" {
   default     = null
 }
 
-variable "account_id" {
-  description = "Data retention period in days"
-  type        = number
-  default     = 632234552152
-}
-
 variable "principal_arn" {
-  type = string,
+  type = string
   default = ""
 }
 
 variable "is_access_request" {
-  type = bool,
+  type = bool
   default = false
 }
