@@ -16,7 +16,7 @@ else:
 # Auto-inject principal ARN based on user_id (for access-requests)
 if input_file.startswith("access-requests/") and "user_id" in data:
     account_id = subprocess.check_output([
-        "aws", "sts", "get-caller-identity", "--query", "Account", "--output", "text"
+        "/usr/local/bin/aws", "sts", "get-caller-identity", "--query", "Account", "--output", "text"
     ]).decode("utf-8").strip()
     data["principal_arn"] = f"arn:aws:iam::{account_id}:user/{data['user_id']}"
     data["is_access_request"] = True
