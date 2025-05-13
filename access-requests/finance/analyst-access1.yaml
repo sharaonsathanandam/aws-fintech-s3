@@ -3,3 +3,4 @@ bucket_name: fintech-data-lake-1
 team_name: Financial Analyst
 environment: Dev
 is_access_request: true
+data_classification : "fin_analysis"
