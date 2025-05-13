@@ -70,3 +70,8 @@ variable "is_access_request" {
   type = bool
   default = false
 }
+
+variable "is_bucket_onboarding" {
+  type    = bool
+  default = false
+}
