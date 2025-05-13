@@ -89,3 +89,13 @@ variable "account_id" {
   type        = number
   default     = 632234552152
 }
+
+variable "principal_arn" {
+  type = string,
+  default = ""
+}
+
+variable "is_access_request" {
+  type = bool,
+  default = false
+}
