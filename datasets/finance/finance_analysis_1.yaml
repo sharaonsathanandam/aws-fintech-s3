@@ -1,15 +1,13 @@
 bucket_name         : fintech-data-lake-2
-force_destroy       : true
 team_name           : "Financial Analyst"
 data_classification : "fin_analysis"
 environment         : "Dev"
-kms_key_id          : module.kms_key.key_arn
 folders:
       - data/raw
       - data/processed
 partition_paths:
-      - data/raw/year=2025/month=05
-      - data/processed/year=2025/month=05
+      - data/raw/2025/05
+      - data/processed/2025/05
 tags:
       Description         : Sample bucket for finance analyst
       Team                : Finance Analysis

@@ -6,7 +6,7 @@ variable "bucket_name" {
 variable "force_destroy" {
   description = "Force delete even if objects exist"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "environment" {
