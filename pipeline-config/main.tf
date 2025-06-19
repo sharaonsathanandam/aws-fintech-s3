@@ -67,5 +67,5 @@ resource "aws_s3_bucket_lifecycle_configuration" "my_bucket_lifecycle" {
 
 resource "aws_s3_bucket_notification" "eventbridge" {
   bucket = aws_s3_bucket.s3_bucket.id
-  eventbridge {}
+  eventbridge  = true
 }
