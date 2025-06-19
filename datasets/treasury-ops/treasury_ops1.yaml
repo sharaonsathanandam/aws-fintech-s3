@@ -1,0 +1,15 @@
+bucket_name         : fintech-data-lake-2
+team_name           : "Treasury Operations"
+data_classification : "treas_ops"
+environment         : "Dev"
+folders:
+      - data/raw
+      - data/processed
+partition_paths:
+      - data/raw/2025/05
+      - data/processed/2025/05
+tags:
+      Description         : Sample bucket for finance analyst
+      Team                : Treasury Operations
+      Environment         : Dev
+      Dataset             : fintech-data-lake-3
